@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jornada Avatar: Frações Equivalentes</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .game-card {
+      background: #1e293b;
+      width: 100%;
+      max-width: 600px;
+      min-height: 520px;
+      border-radius: 20px;
+      border: 3px solid #38bdf8;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 25px;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.4s ease-in-out forwards;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* --- TELA 1: VIAGEM PELO MAPA --- */
+    .map-container {
+      width: 100%;
+      height: 220px;
+      background: #0284c7;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #38bdf8;
+    }
+
+    .cloud {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      height: 30px;
+      width: 80px;
+      animation: moveClouds 8s linear infinite;
+    }
+
+    @keyframes moveClouds {
+      from { transform: translateX(-100px); }
+      to { transform: translateX(600px); }
+    }
+
+    .route-line {
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      width: 80%;
+      height: 4px;
+      border-top: 4px dashed #fde047;
+    }
+
+    .traveler {
+      position: absolute;
+      top: calc(50% - 25px);
+      left: 10%;
+      font-size: 2.5rem;
+      transition: left 2.5s ease-in-out;
+      z-index: 10;
+    }
+
+    .travel-text {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #38bdf8;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* --- TELA 2: SABEDORIA & AVATAR --- */
+    .character-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-nivel {
+      background: #fde047;
+      color: #0f172a;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    .avatar-frame {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 4px solid #fde047;
+      background: #334155;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: contrast(110%) saturate(105%);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .wisdom-quote {
+      background: #334155;
+      border-left: 5px solid #fde047;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-style: italic;
+      font-size: 1rem;
+      color: #f1f5f9;
+      margin: 10px 0;
+      text-align: center;
+      max-width: 480px;
+    }
+
+    /* --- TELA 3: DESAFIO DE FRAÇÕES --- */
+    .location-title {
+      color: #38bdf8;
+      font-size: 1.3rem;
+      border-bottom: 2px solid #38bdf8;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .instruction-text {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .visual-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+
+    .fraction-visual-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .fraction-label {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-top: 8px;
+      color: #fde047;
+    }
+
+    .operator {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #fde047;
+      margin: 0 4px;
+    }
+
+    .rect-bar {
+      width: 180px;
+      height: 45px;
+      border: 3px solid #38bdf8;
+      border-radius: 6px;
+      display: flex;
+      overflow: hidden;
+      background: #0f172a;
+    }
+
+    .rect-part {
+      height: 100%;
+      border-right: 2px solid #1e293b;
+    }
+
+    .rect-part:last-child {
+      border-right: none;
+    }
+
+    input[type="text"] {
+      font-size: 1.2rem;
+      width: 140px;
+      text-align: center;
+      padding: 8px;
+      border: 2px solid #38bdf8;
+      border-radius: 8px;
+      font-weight: bold;
+      background: #0f172a;
+      color: #fff;
+      outline: none;
+      margin-top: 5px;
+    }
+
+    button {
+      font-size: 1rem;
+      padding: 10px 22px;
+      background-color: #0284c7;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 12px;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: #0369a1;
+    }
+
+    /* CARD DOS SÍMBOLOS DESCOBERTOS */
+    .symbols-card {
+      display: none;
+      background-color: #064e3b;
+      border: 2px dashed #34d399;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 15px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .symbol-item {
+      font-size: 1rem;
+      margin: 4px 0;
+      font-weight: bold;
+      color: #a7f3d0;
+    }
+
+    /* PERGAMINHO DO MAPA */
+    .scroll-wrapper {
+      display: none;
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    .scroll-container {
+      background: #fef3c7;
+      color: #78350f;
+      border-top: 10px solid #b45309;
+      border-bottom: 10px solid #b45309;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.5);
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 1.8s ease-in-out, opacity 0.8s ease-in-out;
+      text-align: center;
+    }
+
+    .scroll-container.unroll {
+      max-height: 380px;
+      opacity: 1;
+    }
+
+    .scroll-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #92400e;
+      margin-bottom: 8px;
+    }
+
+    .map-img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 2px solid #b45309;
+    }
+  </style>
+</head>
+<body>
+
+<div class="game-card">
+
+  <!-- TELA 1: VIAGEM ANIMADA -->
+  <div id="screen-travel" class="screen active">
+    <div class="map-container">
+      <div class="cloud" style="top: 20px;"></div>
+      <div class="cloud" style="top: 120px; animation-delay: 2s;"></div>
+      <div class="route-line"></div>
+      <div id="traveler-icon" class="traveler">🦬</div>
+    </div>
+    <div class="travel-text" id="travel-text">Viajando pelo mapa...</div>
+  </div>
+
+  <!-- TELA 2: SABEDORIA E PERSONAGEM AVATAR -->
+  <div id="screen-wisdom" class="screen">
+    <div class="character-box">
+      <span class="badge-nivel" id="wisdom-level">Sabedoria do Ar</span>
+      
+      <div class="avatar-frame">
+        <img id="wisdom-img" class="avatar-img" src="" alt="Personagem Avatar">
+      </div>
+
+      <h2 id="wisdom-author" style="color: #38bdf8;">Aang</h2>
+      <div class="wisdom-quote" id="wisdom-quote">
+        "Frase de sabedoria aqui..."
+      </div>
+      <button onclick="iniciarDesafio()">Aceitar Desafio</button>
+    </div>
+  </div>
+
+  <!-- TELA 3: DESAFIO DA FRAÇÃO EQUIVALENTE -->
+  <div id="screen-challenge" class="screen">
+    <h3 class="location-title" id="locationName">LOCAL: CARREGANDO...</h3>
+    <p class="instruction-text">Observe os retângulos de mesmo tamanho, iguale os denominadores e resolva a adição:</p>
+    
+    <div class="visual-container">
+      <div class="fraction-visual-box">
+        <div id="rect1" class="rect-bar"></div>
+        <div class="fraction-label" id="label1">?/?</div>
+      </div>
+      <div class="operator">+</div>
+      <div class="fraction-visual-box">
+        <div id="rect2" class="rect-bar"></div>
+        <div class="fraction-label" id="label2">?/?</div>
+      </div>
+      <div class="operator">= ?</div>
+    </div>
+
+    <p style="font-size: 0.95rem; font-weight: bold; margin-bottom: 4px;">Digite a fração resposta (ex: 3/4):</p>
+    <input type="text" id="answer" placeholder="ex: 3/4" autocomplete="off">
+    <br>
+    <button id="btnCheck" onclick="checkAnswer()">Enviar Resposta</button>
+
+    <div id="feedback" style="margin-top:10px; font-size: 1rem; font-weight:bold;"></div>
+
+    <!-- REVELAÇÃO DOS SÍMBOLOS FIXOS -->
+    <div class="symbols-card" id="symbolsBlock">
+      <h4 style="margin:0 0 6px 0; color:#34d399; font-size: 1rem; text-align: center;">🎉 Excelente! Anote os 3 símbolos na sua folha:</h4>
+      <div class="symbol-item" id="symbol1"></div>
+      <div class="symbol-item" id="symbol2"></div>
+      <div class="symbol-item" id="symbol3"></div>
+    </div>
+
+    <!-- PERGAMINHO DO MAPA FIXO -->
+    <div class="scroll-wrapper" id="scrollWrapper">
+      <div class="scroll-container" id="scrollContainer">
+        <div class="scroll-title">📜 Mapa do Destino Revelado</div>
+        <img id="mapImage" class="map-img" src="" alt="Mapa do Local">
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // 1. DICIONÁRIO DOS 10 LOCAIS: AVATAR + ESCOLA + FRASES + MAPAS FIXOS
+  const locationData = {
+    "area_verde": {
+      name: "Templo do Ar do Sul - Área Verde",
+      personagem: "Avatar Aang",
+      imagem: "aang.jpeg",
+      veiculo: "🦬",
+      nivel: "Domínio do Ar",
+      frase: "Quando estamos com medo, ainda podemos escolher ter coragem e encontrar o equilíbrio.",
+      symbols: ["🎨 = P", "🌿 = V", "⚙️ = Z"],
+      mapImg: "verde.png"
+    },
+    "sala_apoio": {
+      name: "Tribo da Água do Sul - Sala de Apoio",
+      personagem: "Katara",
+      imagem: "katara.png",
+      veiculo: "⛵",
+      nivel: "Domínio da Água",
+      frase: "A esperança é algo que você dá a si mesmo. Esse é o significado de força interior.",
+      symbols: ["🔥 = F", "🎲 = G", "💡 = I"],
+      mapImg: "Recurso.png"
+    },
+    "sala_pedagogica": {
+      name: "Reino da Terra - Sala Pedagógica",
+      personagem: "Toph Beifong",
+      imagem: "toph.jpeg",
+      veiculo: "🦬",
+      nivel: "Domínio da Terra",
+      frase: "Não importa o quão difícil o caminho pareça, enfrente os obstáculos de frente sem recuar.",
+      symbols: ["📘 = E", "✏️ = N", "📌 = S"],
+      mapImg: "Pedagogia.png"
+    },
+    "refeitorio": {
+      name: "Cidade de Omashu - Refeitório",
+      personagem: "Rei Bumi",
+      imagem: "rei_bumi.jpeg",
+      veiculo: "🚃",
+      nivel: "Pensamento Alternativo",
+      frase: "Você precisa abrir sua mente para as alternativas. A resposta nem sempre é o caminho óbvio!",
+      symbols: ["🔍 = R", "🧩 = C", "🌟 = O"],
+      mapImg: "Refeitorio.png"
+    },
+    "quadrinha": {
+      name: "Nação do Fogo - Quadrinha",
+      personagem: "Príncipe Zuko",
+      imagem: "zuko.jpeg",
+      veiculo: "🚢",
+      nivel: "Domínio do Fogo",
+      frase: "Nossos erros do passado não definem quem somos, mas sim a determinação de fazer o bem hoje.",
+      symbols: ["🌈 = S", "📐 = T", "🔔 = U"],
+      mapImg: "Quadrinha.png"
+    },
+    "biblioteca": {
+      name: "Biblioteca de Wan Shi Tong - Biblioteca",
+      personagem: "Tio Iroh",
+      imagem: "tio_iroh.jpeg",
+      veiculo: "🦬",
+      nivel: "Sabedoria dos Anciãos",
+      frase: "É importante retirar a sabedoria de diferentes lugares. Se você a retirar de apenas um, ela se torna rígida.",
+      symbols: ["🚀 = A", "⚡ = E", "🎯 = M"],
+      mapImg: "Biblioteca.png"
+    },
+    "secretaria": {
+      name: "Templo do Leão-Tartaruga - Secretaria",
+      personagem: "Avatar Roku",
+      imagem: "avatar_roku.jpeg",
+      veiculo: "🐉",
+      nivel: "Conexão dos Avatares",
+      frase: "Ser o Avatar significa entender como todas as coisas estão conectadas em perfeita harmonia.",
+      symbols: ["💎 = D", "🏆 = N", "🔑 = L"],
+      mapImg: "Secretaria.png"
+    },
+    "sala07": {
+      name: "Ba Sing Se - Sala 07",
+      personagem: "Jet",
+      imagem: "jet.jpeg",
+      veiculo: "🐂",
+      nivel: "Estratégia e Foco",
+      frase: "Planeje seus passos com sabedoria para vencer qualquer desafio com o seu grupo.",
+      symbols: ["⚓ = B", "🎒 = H", "🧭 = Q"],
+      mapImg: "Sala_07.png"
+    },
+    "quadra": {
+      name: "Arena de Dominação - Quadra",
+      personagem: "O Cego da Terra",
+      imagem: "Mecanico.jpg",
+      veiculo: "🦬",
+      nivel: "Foco e Precisão",
+      frase: "Sinta o chão, meça a força necessária e dê a sua resposta com precisão total!",
+      symbols: ["🛡️ = Y", "⚔️ = J", "📜 = O"],
+      mapImg: "Quadra.png"
+    },
+    "sala_ciencias": {
+      name: "Ilha Kyoshi - Sala de Ciências",
+      personagem: "Suki",
+      imagem: "suki.png",
+      veiculo: "⛵",
+      nivel: "Técnica das Guerreiras",
+      frase: "Com disciplina, estudo e trabalho em equipe, não há problema matemático imbatível.",
+      symbols: ["🧪 = K", "🔬 = X", "⚡ = W"],
+      mapImg: "Ciencias.png"
+    }
+  };
+
+  // 2. DENOMINADORES MÚLTIPLOS VÁLIDOS
+  const denominatorPairs = [
+    [2, 4],
+    [3, 6],
+    [4, 8],
+    [5, 10],
+    [3, 9],
+    [2, 8],
+    [2, 10],
+    [4, 12],
+    [6, 12]
+  ];
+
+  let currentLocationKey = "area_verde";
+  let currentAnswer = "";
+  let currentDenominator = 1;
+
+  function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+  }
+
+  function renderRectangle(containerId, num, den, color) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    for (let i = 0; i < den; i++) {
+      const part = document.createElement("div");
+      part.className = "rect-part";
+      part.style.width = (100 / den) + "%";
+      part.style.backgroundColor = (i < num) ? color : "#0f172a";
+      container.appendChild(part);
+    }
+  }
+
+  // ETAPA 1: ANIMAÇÃO DA VIAGEM
+  function iniciarViagem() {
+    const locInfo = locationData[currentLocationKey];
+    showScreen('screen-travel');
+
+    const traveler = document.getElementById('traveler-icon');
+    const travelText = document.getElementById('travel-text');
+
+    traveler.innerText = locInfo.veiculo;
+    traveler.style.left = "10%";
+    travelText.innerText = `Viajando para: ${locInfo.name}...`;
+
+    setTimeout(() => {
+      traveler.style.left = "75%";
+    }, 100);
+
+    setTimeout(() => {
+      carregarSabedoria();
+    }, 2600);
+  }
+
+  // ETAPA 2: TELA DO AVATAR E FRATE DE SABEDORIA
+  function carregarSabedoria() {
+    const locInfo = locationData[currentLocationKey];
+    document.getElementById('wisdom-level').innerText = locInfo.nivel;
+    document.getElementById('wisdom-img').src = locInfo.imagem;
+    document.getElementById('wisdom-author').innerText = locInfo.personagem;
+    document.getElementById('wisdom-quote').innerText = `"${locInfo.frase}"`;
+    
+    showScreen('screen-wisdom');
+  }
+
+  // ETAPA 3: DESAFIO DE FRAÇÕES EQUIVALENTES
+  function iniciarDesafio() {
+    const locInfo = locationData[currentLocationKey];
+
+    document.getElementById('locationName').innerText = locInfo.name;
+    document.getElementById('answer').value = "";
+    document.getElementById('feedback').innerHTML = "";
+    document.getElementById('symbolsBlock').style.display = "none";
+    document.getElementById('scrollWrapper').style.display = "none";
+    document.getElementById('scrollContainer').classList.remove('unroll');
+    document.getElementById('btnCheck').style.display = "inline-block";
+
+    const pair = denominatorPairs[Math.floor(Math.random() * denominatorPairs.length)];
+    const d1 = pair[0];
+    const d2 = pair[1];
+    currentDenominator = d2;
+
+    const n1 = Math.floor(Math.random() * (d1 - 1)) + 1;
+    const factor = d2 / d1;
+    const numEquiv = n1 * factor;
+    const maxN2 = Math.max(1, d2 - numEquiv);
+    const n2 = Math.floor(Math.random() * Math.min(d2 - 1, maxN2)) + 1;
+
+    const totalNum = numEquiv + n2;
+    currentAnswer = totalNum + "/" + d2;
+
+    renderRectangle("rect1", n1, d1, "#38bdf8");
+    renderRectangle("rect2", n2, d2, "#f97316");
+
+    document.getElementById('label1').innerText = n1 + "/" + d1;
+    document.getElementById('label2').innerText = n2 + "/" + d2;
+
+    showScreen('screen-challenge');
+  }
+
+  // CONFERE RESPOSTA E ABRE REVELAÇÕES
+  function checkAnswer() {
+    const userAns = document.getElementById('answer').value.trim();
+    if (userAns === currentAnswer) {
+      document.getElementById('feedback').innerHTML = "<span style='color:#34d399;'>✨ Resposta Correta!</span>";
+      
+      const locInfo = locationData[currentLocationKey];
+      document.getElementById('symbol1').innerText = "1º Símbolo: " + locInfo.symbols[0];
+      document.getElementById('symbol2').innerText = "2º Símbolo: " + locInfo.symbols[1];
+      document.getElementById('symbol3').innerText = "3º Símbolo: " + locInfo.symbols[2];
+      document.getElementById('symbolsBlock').style.display = "block";
+      document.getElementById('btnCheck').style.display = "none";
+
+      // Exibe e abre o pergaminho com o mapa fixo do local
+      const mapImg = document.getElementById('mapImage');
+      mapImg.src = locInfo.mapImg;
+      
+      const scrollWrapper = document.getElementById('scrollWrapper');
+      const scrollContainer = document.getElementById('scrollContainer');
+      scrollWrapper.style.display = "block";
+      
+      setTimeout(() => {
+        scrollContainer.classList.add('unroll');
+      }, 100);
+
+    } else {
+      document.getElementById('feedback').innerHTML = "<span style='color:#f87171;'>Ops! Tente novamente.<br><small style='color:#cbd5e1;'>Dica: converta a 1ª fração para o denominador " + currentDenominator + ".</small></span>";
+    }
+  }
+
+  window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const locParam = urlParams.get('local');
+    if (locParam && locationData[locParam]) {
+      currentLocationKey = locParam;
+    }
+    iniciarViagem();
+  };
+</script>
+
+</body>
+</html>
